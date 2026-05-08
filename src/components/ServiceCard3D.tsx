@@ -1,7 +1,5 @@
 'use client';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
-
 const icons: Record<string, string> = {
   ticket: 'M4 16l2-2-2-2 2-2-2-2 2-2-2-2 2 2 2-2 2 2-2 2 2-2 2 2-2 2 2 2-2',
   tours: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
@@ -10,50 +8,19 @@ const icons: Record<string, string> = {
   visa: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z',
   corporate: 'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z',
 };
-
-const videoMap: Record<string, string> = {
-  "confirm-ticket": "/assets/homepage/videos/train-tracking-strip.webm",
-  "luxury-tours": "/assets/homepage/videos/luxury-stays.webm",
-  "hotel-booking": "/assets/homepage/videos/luxury-stays.webm",
-  "flight-booking": "/assets/homepage/videos/chauffeur-drives.webm",
-  "visa-assistance": "/assets/homepage/videos/station-transfers.webm",
-  "corporate-travel": "/assets/homepage/videos/chauffeur-drives.webm",
-};
-
-export default function ServiceCard3D({
-  id, title, desc, gradient, href, delay = 0
-}: {
-  id: string; title: string; desc: string; gradient: string; href: string; delay?: number;
-}) {
-  const iconPath = icons[id] || icons.ticket;
-  const videoSrc = videoMap[id] || videoMap["luxury-tours"];
+export default function ServiceCard3D({ id, title, desc, gradient, href }: { id:string; title:string; desc:string; gradient:string; href:string }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 40, rotateX: 15 }}
-      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.7, delay }}
-      whileHover={{ scale: 1.03, rotateY: 5 }}
-      className="card-3d"
-    >
-      <Link href={href} className="block h-full">
-        <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradient} border border-gold-400/20 h-full group cursor-pointer`}>
-          <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-50 transition-opacity duration-500" src={videoSrc} />
-          <div className="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-navy-950/40 to-navy-950/20" />
-          <div className="relative z-10 p-8 h-full flex flex-col justify-between">
-            <div>
-              <svg viewBox="0 0 24 24" className="w-12 h-12 mb-4 stroke-gold-400 fill-none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d={iconPath} />
-              </svg>
-              <h3 className="text-2xl font-heading text-gold-400 mb-3">{title}</h3>
-              <p className="text-cream-100/70 text-sm leading-relaxed">{desc}</p>
-            </div>
-            <div className="mt-4 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
-              <svg className="w-6 h-6 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-            </div>
-          </div>
+    <Link href={href} className="block h-full card-3d group">
+      <div className={`relative service-card bg-gradient-to-br ${gradient} border border-gold-400/20 p-8 h-full`}>
+        <div className="relative z-10">
+          <svg viewBox="0 0 24 24" className="w-10 h-10 mb-4 stroke-gold-400 fill-none" strokeWidth="1.5"><path d={icons[id]||icons.ticket}/></svg>
+          <h3 className="text-xl font-heading text-gold-400 mb-2">{title}</h3>
+          <p className="text-cream-100/70 text-sm">{desc}</p>
         </div>
-      </Link>
-    </motion.div>
+        <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
+          <svg className="w-5 h-5 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </div>
+      </div>
+    </Link>
   );
 }

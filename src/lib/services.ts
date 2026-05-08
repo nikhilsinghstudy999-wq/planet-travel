@@ -16,10 +16,6 @@ export const cities = [
   { slug:"khajuraho", name:"Khajuraho", fort:"Temples", hotel:"The Lalit Temple View", desc:"Temple art, cultural evenings.", img:"/assets/homepage/destinations/khajuraho.png" },
   { slug:"orchha", name:"Orchha", fort:"Orchha Fort", hotel:"Amar Mahal", desc:"Bundela grandeur on Betwa.", img:"/assets/homepage/destinations/orchha.png" },
   { slug:"kanha", name:"Kanha", fort:"National Park", hotel:"Banjaar Tola", desc:"Tiger safari & jungle luxury.", img:"/assets/homepage/destinations/kanha.png" },
-  { slug:"pachmarhi", name:"Pachmarhi", fort:"Hill Station", hotel:"WelcomHeritage Golf View", desc:"Waterfalls & colonial charm.", img:"/assets/homepage/destinations/pachmarhi.png" },
-  { slug:"sanchi", name:"Sanchi", fort:"Stupa", hotel:"Gateway Retreat", desc:"Buddhist serenity.", img:"/assets/homepage/destinations/sanchi.png" },
-  { slug:"maheshwar", name:"Maheshwar", fort:"Ahilya Fort", hotel:"Ahilya Fort Hotel", desc:"Riverfront luxury.", img:"/assets/homepage/destinations/maheshwar.png" },
-  { slug:"bandhavgarh", name:"Bandhavgarh", fort:"Bandhavgarh Fort", hotel:"Mahua Kothi", desc:"Tigers & ancient ruins.", img:"/assets/homepage/destinations/bandhavgarh.png" },
 ];
 
 export const carTypes = [
