@@ -2,207 +2,246 @@
 set -euo pipefail
 cd "$(dirname "$0")" || exit 1
 
-echo "🧹 Cleaning node_modules and lock file..."
-rm -rf node_modules package-lock.json
+echo "🧹 Fixing CSS & making production-ready..."
 
-echo "📦 Reinstalling dependencies..."
-npm install
+# 1. Rewrite globals.css from scratch (no syntax errors, all needed styles)
+cat > src/app/globals.css <<'CSSEOF'
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,500&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
 
-echo "🗑️ Removing train component..."
-rm -f src/components/HeroTrain.tsx
-
-echo "📝 Rewriting homepage without train..."
-cat > src/app/page.tsx <<'HOME'
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import ServiceCard3D from '@/components/ServiceCard3D';
-import SectionHeader from '@/components/SectionHeader';
-import ReviewCarousel from '@/components/ReviewCarousel';
-import ReviewForm from '@/components/ReviewForm';
-import WhyUsCard from '@/components/WhyUsCard';
-import DestinationCards from '@/components/DestinationCards';
-import VideoCard3D from '@/components/VideoCard3D';
-import { services } from '@/lib/services';
-import { generatePageMetadata } from '@/lib/seo';
-import Link from 'next/link';
-
-export const metadata = generatePageMetadata(
-  "Planet&Travel — Luxury Travel Curator | Madhya Pradesh",
-  "Bespoke luxury journeys across India. Private guides, palace stays, real‑time train tracking since 2000.",
-  "/"
-);
-
-export default function Home() {
-  return (
-    <>
-      <Navbar />
-      <main>
-        {/* Hero – video background only */}
-        <section className="relative min-h-screen hero-background">
-          <video autoPlay muted loop playsInline poster="/assets/hero/homepage-hero.webm" className="absolute inset-0 w-full h-full object-cover">
-            <source src="/assets/hero/homepage-hero.webm" type="video/webm" />
-            <source src="/assets/hero/homepage-hero.mp4" type="video/mp4" />
-          </video>
-          <div className="hero-overlay absolute inset-0 bg-navy-950/70 z-[1]" />
-          <div className="hero-content relative z-[2] flex items-center justify-center h-full text-center px-4 pt-20 md:pt-28">
-            <div className="max-w-4xl">
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-heading font-bold mb-6">
-                <span className="text-backdrop"><span className="text-gradient">Beyond Journeys,</span><br/><span className="text-gradient">Into Legacies</span></span>
-              </h1>
-              <p className="text-cream-100/60 text-lg md:text-xl max-w-2xl mx-auto mb-8">
-                <span className="text-backdrop">Your personal travel architect for India. Curating luxury experiences since 2000.</span>
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/concierge" className="bg-gold-400 text-navy-950 font-bold px-8 py-4 rounded-xl hover:shadow-2xl transition-all text-lg">Begin Your Journey</Link>
-                <Link href="/train" className="border border-gold-400/30 text-gold-400 px-8 py-4 rounded-xl hover:bg-gold-400/10 transition-all text-lg">Track a Train</Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* About Us – real image */}
-        <section className="py-24 bg-navy-900/50">
-          <div className="max-w-7xl mx-auto px-4">
-            <SectionHeader title="Our Legacy" subtitle="Since 2000 — A Journey of Trust & Excellence" />
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div>
-                <p className="text-cream-100/70 leading-relaxed mb-6">
-                  Founded in the year <strong className="text-gold-400">2000</strong>, Planet&Travel began its journey from a small office at <strong className="text-gold-400">Platform №1, Gwalior Railway Station, opposite the NCC Office</strong>.
-                </p>
-                <div className="flex items-center gap-8 mt-8">
-                  <div className="text-center"><span className="text-4xl font-heading text-gold-400">25+</span><p className="text-xs text-cream-100/50">Years</p></div>
-                  <div className="text-center"><span className="text-4xl font-heading text-gold-400">50K+</span><p className="text-xs text-cream-100/50">Travellers</p></div>
-                  <div className="text-center"><span className="text-4xl font-heading text-gold-400">100K+</span><p className="text-xs text-cream-100/50">Tickets</p></div>
-                </div>
-              </div>
-              <div className="glass rounded-2xl p-6 overflow-hidden">
-                <img src="/assets/homepage/about-family.png" alt="Family traveling" className="w-full h-80 object-cover rounded-xl" loading="lazy" decoding="async" />
-                <p className="text-center text-gold-400 font-heading mt-4">Platform №1, Gwalior Railway Station</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Services Grid */}
-        <section id="services" className="py-24 bg-navy-950">
-          <div className="max-w-7xl mx-auto px-4">
-            <SectionHeader title="Our Services" subtitle="Curated with precision" />
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((s, i) => <ServiceCard3D key={s.id} {...s} delay={i * 0.1} />)}
-            </div>
-          </div>
-        </section>
-
-        {/* Why Us */}
-        <section className="py-24 bg-navy-900/30">
-          <div className="max-w-7xl mx-auto px-4">
-            <SectionHeader title="Why Planet&Travel" />
-            <div className="grid md:grid-cols-4 gap-6">
-              <WhyUsCard id="concierge" title="Personal Concierge" description="Dedicated travel architect for every booking." />
-              <WhyUsCard id="tracking" title="Real‑Time Tracking" description="Live train status, platform, delays." />
-              <WhyUsCard id="reviews" title="Verified Reviews" description="50,000+ genuine traveller reviews." />
-              <WhyUsCard id="support" title="24×7 Support" description="WhatsApp, email, and phone." />
-            </div>
-          </div>
-        </section>
-
-        {/* Video Cards */}
-        <section className="py-24 bg-navy-950">
-          <div className="max-w-7xl mx-auto px-4">
-            <SectionHeader title="Experience the Journey" />
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <VideoCard3D webmSrc="/assets/homepage/videos/chauffeur-drives.webm" posterSrc="/assets/homepage/videos/chauffeur-drives.webm" title="Chauffeur Drives" description="Luxury vehicles at your disposal" />
-              <VideoCard3D webmSrc="/assets/homepage/videos/station-transfers.webm" posterSrc="/assets/homepage/videos/station-transfers.webm" title="Station Transfers" description="Seamless railway & airport pickups" />
-              <VideoCard3D webmSrc="/assets/homepage/videos/luxury-stays.webm" posterSrc="/assets/homepage/videos/luxury-stays.webm" title="Luxury Stays" description="Palace hotels & beach resorts" />
-            </div>
-          </div>
-        </section>
-
-        {/* Track Your Train Live */}
-        <section className="relative py-32 bg-navy-950 overflow-hidden text-center">
-          <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-20" src="/assets/homepage/videos/train-tracking-strip.webm" />
-          <div className="absolute inset-0 bg-navy-950/60" />
-          <div className="relative z-10 max-w-4xl mx-auto px-4">
-            <SectionHeader title="Track Your Train Live" subtitle="Real‑time Indian Railways tracking" />
-            <Link href="/train" className="inline-flex items-center gap-2 bg-gold-400 text-navy-950 font-bold px-10 py-4 rounded-xl text-lg hover:shadow-2xl transition-all">
-              Open Golden Rail Conductor
-            </Link>
-          </div>
-        </section>
-
-        {/* Destinations */}
-        <section className="py-24 bg-navy-950">
-          <div className="max-w-7xl mx-auto px-4">
-            <SectionHeader title="Popular Destinations" />
-            <DestinationCards />
-          </div>
-        </section>
-
-        {/* Stats */}
-        <section className="py-16 bg-navy-900/50 border-y border-gold-400/5">
-          <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {[{ n:'25+', l:'Years' },{ n:'50K+', l:'Travellers' },{ n:'100K+', l:'Tickets' },{ n:'500+', l:'Tours' }].map((s,i) => (
-              <div key={i}><span className="text-4xl font-heading text-gradient block">{s.n}</span><span className="text-cream-100/40 text-sm">{s.l}</span></div>
-            ))}
-          </div>
-        </section>
-
-        {/* Reviews */}
-        <section id="reviews" className="py-24 bg-navy-950">
-          <div className="max-w-7xl mx-auto px-4">
-            <SectionHeader title="What Travellers Say" />
-            <ReviewCarousel />
-          </div>
-        </section>
-
-        {/* Submit Review */}
-        <section className="py-20 bg-navy-900/30">
-          <div className="max-w-3xl mx-auto px-4">
-            <SectionHeader title="Share Your Experience" />
-            <ReviewForm />
-          </div>
-        </section>
-
-        {/* Confirmed Ticket CTA */}
-        <section className="relative py-28 bg-navy-950 overflow-hidden text-center">
-          <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover opacity-20" src="/assets/homepage/videos/confirmed-ticket-strip.webm" />
-          <div className="absolute inset-0 bg-navy-950/60" />
-          <div className="relative z-10 max-w-4xl mx-auto px-4">
-            <SectionHeader title="Need a Confirmed Ticket?" subtitle="Tatkal, Premium Tatkal, or Advance — our agents get it done" />
-            <Link href="/services/confirm-ticket" className="inline-block bg-gold-400 text-navy-950 font-bold px-12 py-5 rounded-2xl text-xl hover:shadow-2xl transition-all">
-              Get Confirmed Ticket →
-            </Link>
-          </div>
-        </section>
-
-        {/* Visit Us */}
-        <section className="py-24 bg-navy-950">
-          <div className="max-w-7xl mx-auto px-4">
-            <SectionHeader title="Visit Us" />
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div className="glass rounded-2xl p-8">
-                <p className="text-xl text-gold-400 font-heading mb-2">Platform №1, Gwalior Railway Station</p>
-                <p className="text-cream-100/50">Opposite NCC Office, Gwalior — 474002</p>
-              </div>
-              <div className="glass rounded-2xl overflow-hidden">
-                <img src="/assets/homepage/visit-us.png" alt="Planet&Travel Office" className="w-full h-80 object-cover" loading="lazy" decoding="async" />
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </>
-  );
+:root {
+  --navy-950: #0a1628;
+  --gold-400: #D4AF37;
+  --cream-100: #FFF8F0;
+  --skin: #F5E6D3;
 }
-HOME
 
+* { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; }
+h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+/* Glass */
+.glass {
+  background: rgba(10,22,40,0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(212,175,55,0.15);
+}
+.glass-light {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(212,175,55,0.1);
+}
+
+/* Header */
+.header-bg {
+  background: linear-gradient(135deg, #ffffff 0%, #e0f0ff 20%, #b3d9ff 40%, #f5e6d3 60%, #ffffff 80%, #e0f0ff 100%);
+  background-size: 400% 400%;
+  animation: headerShift 16s ease infinite;
+  backdrop-filter: blur(16px);
+}
+@keyframes headerShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Text gradient (white‑skyblue) */
+.text-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, #87CEEB 50%, #ffffff 100%);
+  background-size: 300% 300%;
+  animation: gradientShift 8s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Text backdrop */
+.text-backdrop {
+  display: inline-block;
+  background: rgba(10,22,40,0.75);
+  backdrop-filter: blur(12px);
+  padding: 0.5rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(212,175,55,0.2);
+}
+
+/* Hero background with video */
+.hero-background {
+  position: relative;
+  overflow: hidden;
+}
+.hero-background video,
+.hero-background img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10,22,40,0.75);
+  z-index: 1;
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding-top: 5rem;
+}
+
+/* Hero fallback gradient */
+.hero-fallback-bg {
+  background: linear-gradient(135deg, #87CEEB 0%, #00FFFF 50%, #90EE90 100%);
+  background-size: 400% 400%;
+  animation: heroGradient 12s ease infinite;
+}
+@keyframes heroGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 3D card */
+.card-3d {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+.card-3d:hover {
+  transform: rotateY(10deg) rotateX(-5deg) scale(1.02);
+}
+
+/* Video card */
+.video-card {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  border-radius: 1rem;
+  perspective: 800px;
+  transition: transform 0.4s ease;
+}
+.video-card:hover {
+  transform: rotateY(5deg) rotateX(-3deg) scale(1.02);
+}
+.video-card video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Review carousel */
+.review-carousel {
+  animation: marquee 40s linear infinite;
+}
+.review-carousel:hover {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Train container – removed, but keep class for future */
+.train-svg-container {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 200px;
+  overflow: hidden;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+/* Smoky train wheel / smoke – removed, safe to keep */
+.train-wheel {
+  transform-origin: center;
+  animation: spinWheel 2s linear infinite;
+}
+@keyframes spinWheel {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.smoke-puff {
+  animation: riseSmoke 2s ease-out infinite;
+  opacity: 0;
+}
+@keyframes riseSmoke {
+  0% { transform: translateY(0) scale(0.8); opacity: 0.7; }
+  100% { transform: translateY(-80px) scale(2.5); opacity: 0; }
+}
+
+/* Gradient sub text */
+.text-gradient-sub {
+  font-weight: 600;
+  background: linear-gradient(135deg, #ffffff 0%, #87CEEB 50%, #ffffff 100%);
+  background-size: 300% 300%;
+  animation: gradientShift 8s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Service card hover border glow */
+.service-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px; right: -2px; bottom: -2px;
+  background: linear-gradient(45deg, #D4AF37, #F5E08E, #D4AF37, #F5E08E);
+  background-size: 400% 400%;
+  animation: borderGlow 4s linear infinite;
+  border-radius: 20px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.service-card:hover::before {
+  opacity: 1;
+}
+@keyframes borderGlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Nav 3D button */
+.nav-btn {
+  position: relative;
+  padding: 0.6rem 1.6rem;
+  background: linear-gradient(to bottom, #ffffff, #e6d5c3);
+  color: #0a1628;
+  font-weight: 700;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.8), inset 0 -2px 0 rgba(0,0,0,0.1);
+  transform: perspective(500px) rotateX(2deg);
+  transition: all 0.3s;
+}
+.nav-btn:hover {
+  transform: perspective(500px) rotateX(0deg) translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.9);
+}
+CSSEOF
+
+# 2. Remove all previous fallback onerror attributes from img tags
+find src -type f -name '*.tsx' -exec sed -i 's/ onerror="[^"]*"//g' {} \;
+
+# 3. Build & push
 echo "🏗️ Building..."
 npm run build
 
 git add -A
-git commit -m "🧹 Clean install, remove train, only real images" || echo "Nothing to commit"
+git commit -m "🛠 Production‑ready CSS, gradient fallback, clean images" || echo "Nothing to commit"
 git push origin main
 
 echo ""
-echo "✅ Fixed. Site will deploy on Vercel."
+echo "✅ CSS fixed. Site ready for Vercel."

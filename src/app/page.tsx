@@ -23,7 +23,7 @@ export default function Home() {
       <Navbar />
       <main>
         {/* Hero – video background only */}
-        <section className="relative min-h-screen hero-background">
+        <section className="relative min-h-screen hero-background hero-fallback-bg">
           <video autoPlay muted loop playsInline poster="/assets/hero/homepage-hero.webm" className="absolute inset-0 w-full h-full object-cover">
             <source src="/assets/hero/homepage-hero.webm" type="video/webm" />
             <source src="/assets/hero/homepage-hero.mp4" type="video/mp4" />
